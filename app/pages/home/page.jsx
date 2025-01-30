@@ -113,7 +113,8 @@ export default function nav() {
                   onClick={() => moveByname(item.name)}
                 >
                   <figure>
-                    <img className="imgMenu" src={item.img} alt={item.name} />
+                    <img className="w-[100%] h-[140px] object-cover sm:h-[100px] md:h-[120px] lg:h-[130px] xl:h-[140px]" 
+                    src={item.img} alt={item.name} />
                   </figure>
                   <div className="card-body">
                     <div className="card-title text-center text-[18px] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.3rem]">

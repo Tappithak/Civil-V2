@@ -1,44 +1,113 @@
-'use client';
+"use client";
 import * as React from "react";
 import axios from "axios";
-import Image from 'next/image'
+import Image from "next/image";
+import Swal from "sweetalert2";
 
-export default function navbar({search,setsearch,setload,setData,setbackground}) {
-    React.useEffect(() => {
-        const config = "action=gethubImg&username=adminDB&password=Ad1234n";
-        const fetchData = async () => {
-          try {
-            setload(true);
-            const res = await axios.get(
-              "https://script.google.com/macros/s/AKfycbyEb5N44PQzmHgurDXn2_-EWSAKyOuwYcy9-SElYBloJeJR9LzOHskbRUbvGHUInqPE/exec?" +
-                config
-            );
-            setData(res.data);
+export default function navbar({
+  search,
+  setsearch,
+  setload,
+  setData,
+  setbackground,
+}) {
+  const [user, setuser] = React.useState("");
+  const [fullname, setfullname] = React.useState("");
+  const logoutconfirm = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to log out?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    });
 
-              let resualt = "";
-              for (var i = 0; i < res.data.length; i++) {
-                if (res.data[i].name == localStorage.getItem("listSel")) {
-                  resualt = res.data[i].img;
-                }
-              }
-              setbackground(resualt);
+    if (result.isConfirmed) {
+      try {
+        await axios.post("/api/logout", {
+          withCredentials: true, // ส่ง Cookies ไปด้วย
+        });
 
-          } catch (error) {
-            setload(false);
-            console.log(error);
-          } finally {
-            setload(false);
+        axios.post("/api/removedevice", {username:fullname}).then((res) => {
+          if (res.status === 200) {
+            window.location.href = "/auth/login";
+            Swal.fire({
+              title: "Logout success!",
+              icon: "success",
+            });
           }
-        };
-    
-        fetchData();
-      }, []);
+        });
+      } catch (err) {
+        window.location.href = "/auth/login";
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setload(true);
+        const res = await axios.get(`/api/read?action=gethubImg`, {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+        setData(res.data);
+
+        let resualt = "";
+        for (var i = 0; i < res.data.length; i++) {
+          if (res.data[i].name == localStorage.getItem("listSel")) {
+            resualt = res.data[i].img;
+          }
+        }
+        setbackground(resualt);
+      } catch (error) {
+        setload(false);
+        console.log(error);
+      } finally {
+        setload(false);
+      }
+    };
+
+    const validateToken = async () => {
+      try {
+        const response = await axios.get("/api/validate-token", {
+          withCredentials: true,
+        });
+        if (response.data.valid) {
+          // ถ้า Token ถูกต้อง อัพเดท User
+          setfullname(response.data.user);
+          setuser(response.data.user.split("")[0]);
+          fetchData();
+        }else{
+          axios.post("/api/removedevice", {username:fullname}).then((res) => {
+            if (res.status === 200) {
+              window.location.href = "/auth/login";
+            }
+          });
+        }
+      } catch (error) {
+        // ถ้า Token ไม่ถูกต้อง ให้ลบ Token ออกจาก Cookies
+        window.location.href = "/auth/login";
+        console.log(error);
+      }
+    };
+    validateToken();
+  }, []);
 
   return (
     <div className="navbar bg-white text-slate-950 shadow-lg fixed top-0 left-0 w-full z-50">
       <div className="flex-1">
-      <Image className="btn btn-ghost text-xl" src="/logo-l.jfif" alt="logo" width={80} height={70}/>
-      <a className="ml-3 text-2xl hidden sm:flex">ยุทโธปกรณ์สายช่างโยธา</a>
+        <Image
+          className="btn btn-ghost text-xl"
+          src="/icon.png"
+          alt="logo"
+          width={80}
+          height={70}
+        />
+        <a className="ml-3 text-2xl hidden sm:flex">ยุทโธปกรณ์สายช่างโยธา</a>
       </div>
       <div className="flex-none gap-2">
         <div className="form-control">
@@ -57,7 +126,7 @@ export default function navbar({search,setsearch,setload,setData,setbackground})
             className="btn btn-ghost btn-circle avatar"
           >
             <div className="w-10 rounded-full">
-            <span className="text-3xl">D</span>
+              <span className="text-3xl">{user}</span>
             </div>
           </div>
           <ul
@@ -73,7 +142,7 @@ export default function navbar({search,setsearch,setload,setData,setbackground})
             <li>
               <a>Settings</a>
             </li> */}
-            <li>
+            <li onClick={() => logoutconfirm()}>
               <a>Logout</a>
             </li>
           </ul>

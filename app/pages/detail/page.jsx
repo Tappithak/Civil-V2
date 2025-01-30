@@ -8,7 +8,6 @@ import Sheet from "@mui/joy/Sheet";
 import { Box } from "@mui/material";
 
 export default function detail() {
-  const config = "action=gethubData&username=adminDB&password=Ad1234n";
   const [search, setsearch] = React.useState("");
   const [data, setData] = React.useState([]);
   const [load, setload] = React.useState(false);
@@ -224,11 +223,12 @@ export default function detail() {
     const fetchData = async () => {
       try {
         setload(true);
-        const res = await axios.get(
-          "https://script.google.com/macros/s/AKfycbyEb5N44PQzmHgurDXn2_-EWSAKyOuwYcy9-SElYBloJeJR9LzOHskbRUbvGHUInqPE/exec?" +
-            config
+        const res = await axios.get('/api/read', {
+          params: {
+            action: "gethubData"
+          },
+        }
         );
-
         setData(res.data);
         countLocation(res.data);
       } catch (error) {

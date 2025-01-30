@@ -6,13 +6,11 @@ import Footer from "../../../components/layout/Footer";
 import Table from "@mui/joy/Table";
 import Button from "@mui/joy/Button";
 import Sheet from "@mui/joy/Sheet";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 export default function TableList() {
-  const config = "action=gethubData&username=adminDB&password=Ad1234n";
   const [data, setData] = React.useState([]);
   const [search, setsearch] = React.useState("");
-  const [memust, setmemust] = React.useState("");
   const [load, setload] = React.useState(false);
   const [background, setbackground] = React.useState("");
   const [dataImg, setDataImg] = React.useState([]);
@@ -27,10 +25,11 @@ export default function TableList() {
     const fetchData = async () => {
       try {
         setload(true);
-        const res = await axios.get(
-          "https://script.google.com/macros/s/AKfycbyEb5N44PQzmHgurDXn2_-EWSAKyOuwYcy9-SElYBloJeJR9LzOHskbRUbvGHUInqPE/exec?" +
-            config
-        );
+        const res = await axios.get("/api/read", {
+          params: {
+            action: "gethubData",
+          },
+        });
         setData(res.data);
       } catch (error) {
         setload(false);
@@ -134,46 +133,63 @@ export default function TableList() {
       />
       <Box className="pt-[66px] px-1 md:px-2 xl:px-3">
         <Sheet
-          sx={{overflow: "auto" }}
+          sx={{ overflow: "auto" }}
           className="bg-[#ffffff00] h-[500px] md:h-[650px] xl:h-[750px]"
         >
           <Table stickyHeader>
             <thead>
               <tr className="text-[16px] text-center">
-                <th className="w-[130px] sm:w-[180px] md:w-[220px] xl:w-[350px]">รายการ</th>
+                <th className="w-[130px] sm:w-[180px] md:w-[220px] xl:w-[350px]">
+                  รายการ
+                </th>
                 <th>สถานะ</th>
                 <th>หน่วย</th>
                 <th>View</th>
               </tr>
             </thead>
             <tbody key={data}>
-              {
-              data.filter((val) => {
-                if (search == "") {
-                  return val.list.includes(localStorage.getItem("listSel"));
-                } else if (
-                  val.list.includes(localStorage.getItem("listSel")) &&(
-                  val.list.toLowerCase().includes(search.toLowerCase()) ||
-                  val.status.toLowerCase().includes(search.toLowerCase()) ||
-                  val.depart.toLowerCase().includes(search.toLowerCase()))
-                ) {
-                  return val;
-                }
-              }).map((row, index) => (
-                <tr key={index}>
-                  <td>{row.list}</td>
-                  <td>{row.status}</td>
-                  <td>{row.depart}</td>
-                  <td>
-                    <Button
-                      onClick={() => moveTodetails(row.depart + row.list)}
-                      sx={{backgroundColor: "#a20c0c", color: "white",":hover": {backgroundColor: "#a20c0c"}}}
-                    >
-                      View
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+              {data
+                .filter((val) => {
+                  if (search == "") {
+                    return val.list.includes(localStorage.getItem("listSel"));
+                  } else if (
+                    val.list.includes(localStorage.getItem("listSel")) &&
+                    (val.list.toLowerCase().includes(search.toLowerCase()) ||
+                      val.status.toLowerCase().includes(search.toLowerCase()) ||
+                      val.depart.toLowerCase().includes(search.toLowerCase()))
+                  ) {
+                    return val;
+                  }
+                })
+                .map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.list}</td>
+                    <td>{
+                      row.status == "ใช้งานได้" ? (
+                        <Typography sx={{ color: "#00a000", fontWeight: "bold" }}>
+                          {row.status}
+                        </Typography>
+                      ) : (
+                        <Typography sx={{ color: "#a20c0c",fontWeight: "bold"  }}>
+                          {row.status}
+                        </Typography>
+                      )
+                      }</td>
+                    <td>{row.depart}</td>
+                    <td>
+                      <Button
+                        onClick={() => moveTodetails(row.depart + row.list)}
+                        sx={{
+                          backgroundColor: "#a20c0c",
+                          color: "white",
+                          ":hover": { backgroundColor: "#a20c0c" },
+                        }}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </Table>
         </Sheet>

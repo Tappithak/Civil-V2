@@ -12,13 +12,45 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import axios from "axios";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 
 const LoginForm = () => {
   const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  async function getIPAddress() {
+    try {
+      const response = await fetch("https://api64.ipify.org?format=json");
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error("Error fetching IP:", error);
+    }
+  }
+
+  async function getAddress() {
+    try {
+      const ip = await getIPAddress();
+      const response = await fetch(`https://ipapi.co/${ip}/json/`);
+      const data = await response.json();
+      axios.post("/api/remember-device", {ipdevice:data.ip,username:username}).then((res) => {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "เข้าสู่ระบบสำเร็จ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        window.location.href = "/";
+      });
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching address:", error);
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,14 +63,7 @@ const LoginForm = () => {
       .post("/api/login", data)
       .then((res) => {
         if (res.status === 200) {
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "เข้าสู่ระบบสำเร็จ",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          window.location.href = "/";
+          getAddress();
         }
       })
       .catch((err) => {
@@ -95,14 +120,8 @@ const LoginForm = () => {
           />
         </FormControl>
       </Box>
-      {
-        loading == false &&
-      <Button_sign type="submit">Sign in</Button_sign>
-    }
-      {
-        loading == true &&
-      <Button_sign type="button">Loading ...</Button_sign>
-      }
+      {loading == false && <Button_sign type="submit">Sign in</Button_sign>}
+      {loading == true && <Button_sign type="button">Loading ...</Button_sign>}
     </form>
   );
 };

@@ -22,9 +22,10 @@ export default async function handler(req, res) {
             }
           );
     
-        //   res.status(200).json(user.data); // ส่งคำตอบกลับไปยัง client
+          // res.status(200).json(user.data); // ส่งคำตอบกลับไปยัง client
         // ตรวจสอบว่ามี User นี้ในระบบหรือไม่
-        const datauser = response.data[0][0];
+        
+        const datauser = response.data[0];
       if (!datauser) {
         return res
           .status(401)
@@ -39,20 +40,15 @@ export default async function handler(req, res) {
           .status(401)
           .json({ success: false, message: "Invalid password" });
       }
-
+      
       // สร้าง Token
       const token = jwt.sign(
         {
            userId: datauser._id,
-           username: datauser.name,
-           view: datauser.view,
-           edit: datauser.edit,
-           delete: datauser.delete,
-           add: datauser.add,
-           position: datauser.position
+           username: datauser.nameuser,
            },
         process.env.NEXT_PUBLIC_JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn:  datauser.nameuser == "Administrator" ? "24h" : "1h" }
       );
 
       // // ตั้ง Cookie
