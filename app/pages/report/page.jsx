@@ -270,11 +270,11 @@ load ?
             <Table stickyHeader>
               <thead>
                 <tr className="text-[16px] text-center">
-                  <th className="w-[130px] sm:w-[180px] md:w-[80px] xl:w-[100px]">
+                  <th className="w-[110px] sm:w-[180px] md:w-[80px] xl:w-[100px]">
                   ทะเบียน
                   </th>
-                  <th className="w-[130px] sm:w-[180px] md:w-[80px] xl:w-[180px]">ตราอักษร</th>
-                  <th className="w-[130px] sm:w-[180px] md:w-[80px] xl:w-[180px]">สถานที่</th>
+                  <th className="w-[110px] sm:w-[180px] md:w-[80px] xl:w-[180px]">ตราอักษร</th>
+                  <th className="w-[110px] sm:w-[180px] md:w-[80px] xl:w-[180px]">สถานที่</th>
                 </tr>
               </thead>
               <tbody key={data}>
