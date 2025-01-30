@@ -14,7 +14,7 @@ export default function Home() {
         if (response.data.valid) {
           // ถ้า Token ถูกต้อง อัพเดท User
           window.location.href = '/pages/home';
-        } 
+        }
       } catch (error) {
         // ถ้า Token ไม่ถูกต้อง ให้ลบ Token ออกจาก Cookies
          window.location.href = '/auth/login';

@@ -151,7 +151,6 @@ export default function detail() {
               }
             }
             );
-            console.log(res.data)
             setData(res.data);
             countLocation(res.data)
           } catch (error) {

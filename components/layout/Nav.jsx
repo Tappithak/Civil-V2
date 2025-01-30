@@ -81,19 +81,19 @@ export default function navbar({
           setfullname(response.data.user);
           setuser(response.data.user.split("")[0]);
           fetchData();
-        }else{
-          axios.post("/api/removedevice", {username:fullname}).then((res) => {
-            if (res.status === 200) {
-              window.location.href = "/auth/login";
-            }
-          });
         }
       } catch (error) {
         // ถ้า Token ไม่ถูกต้อง ให้ลบ Token ออกจาก Cookies
-        window.location.href = "/auth/login";
         console.log(error);
+        axios.post("/api/removedevice", {username:localStorage.getItem("nameuser")}).then((res) => {
+          if (res.status === 200) {
+            window.location.href = "/auth/login";
+          }
+        });
+        
       }
     };
+    
     validateToken();
   }, []);
 

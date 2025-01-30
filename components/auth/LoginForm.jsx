@@ -36,6 +36,7 @@ const LoginForm = () => {
       const response = await fetch(`https://ipapi.co/${ip}/json/`);
       const data = await response.json();
       axios.post("/api/remember-device", {ipdevice:data.ip,username:username}).then((res) => {
+        localStorage.setItem("nameuser", username);
         Swal.fire({
           position: "center",
           icon: "success",
