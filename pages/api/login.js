@@ -62,13 +62,7 @@ export default async function handler(req, res) {
         success: true,
         datauser: {
           id: datauser._id,
-          username: datauser.username,
-          token: token,
-          view: datauser.view,
-           edit: datauser.edit,
-           delete: datauser.delete,
-           add: datauser.add,
-           position: datauser.position
+          username: datauser.nameuser
         },
       });
 

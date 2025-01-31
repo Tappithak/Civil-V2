@@ -30,7 +30,7 @@ export default function navbar({
           withCredentials: true, // ส่ง Cookies ไปด้วย
         });
 
-        axios.post("/api/removedevice", {username:fullname}).then((res) => {
+        axios.post("/api/removedevice", {username:localStorage.getItem("nameuser")}).then((res) => {
           if (res.status === 200) {
             window.location.href = "/auth/login";
             Swal.fire({
