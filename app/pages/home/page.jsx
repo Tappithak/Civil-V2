@@ -103,7 +103,7 @@ export default function nav() {
       <div className="pt-[95px] pb-[80px]" style={{ zoom: "90%" }}>
         <div className="grid grid-cols-2 gap-2 p-2 md:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {data
-            .filter((item) => item.name.includes(search) && item.id != "")
+            .filter((item) => item.name && item.name.includes(search) && item.id != "")
             .sort((a, b) => b.num - a.num)
             .map((item) => {
               return (
