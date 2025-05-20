@@ -1,21 +1,41 @@
+// detail.jsx
 "use client";
-import axios from "axios";
 import * as React from "react";
 import Navbar from "../../../components/layout/Nav";
 import Footer from "../../../components/layout/Footer";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
 import { Box } from "@mui/material";
+import { useData } from "../../../contexts/DataContext";
 
 export default function detail() {
-  const [search, setsearch] = React.useState("");
-  const [data, setData] = React.useState([]);
-  const [load, setload] = React.useState(false);
-  const [background, setbackground] = React.useState("");
-  const [dataImg, setDataImg] = React.useState([]);
-  //   const [options, setOptions] = React.useState({});
+ const [search, setSearch] = React.useState("");
+  const { 
+    data, 
+    loading, 
+    fetchData, 
+    dataImg, 
+    fetchImgData, 
+    background, 
+    setBackground 
+  } = useData();
 
-  function countLocation(datalocal) {
+   const updateBackgroundFromLocalStorage = () => {
+    if (typeof window === 'undefined' || !dataImg || dataImg.length === 0) return;
+    
+    const listSel = localStorage.getItem("listSel");
+    if (!listSel) return;
+    
+    const selectedItem = dataImg.find(item => item.name === listSel);
+    if (selectedItem) {
+      console.log("Setting background to:", selectedItem.img);
+      setBackground(selectedItem.img);
+    }
+  };
+
+  function countLocation(dataArray) {
+     if (!dataArray || dataArray.length === 0) return;
+
     var cb = [];
     var sm = [];
     var sk = [];
@@ -25,47 +45,51 @@ export default function detail() {
     var bm = [];
     var nm = [];
 
-    for (var i = 0; i < datalocal.length; i++) {
+    // ตรวจสอบว่ามี localStorage หรือไม่ (client-side)
+    const typeSel = typeof window !== 'undefined' ? localStorage.getItem("typeSel") : null;
+    if (!typeSel) return;
+
+    for (var i = 0; i < dataArray.length; i++) {
       if (
-        datalocal[i].location == "ชลบุรี" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "ชลบุรี" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        cb.push(datalocal[i].location);
+        cb.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "สมุทรปราการ" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "สมุทรปราการ" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        sm.push(datalocal[i].location);
+        sm.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "สงขลา" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "สงขลา" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        sk.push(datalocal[i].location);
+        sk.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "พังงา" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "พังงา" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        png.push(datalocal[i].location);
+        png.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "นครปฐม" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "นครปฐม" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        nt.push(datalocal[i].location);
+        nt.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "ตราด" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "ตราด" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        tt.push(datalocal[i].location);
+        tt.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "กรุงเทพ" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "กรุงเทพ" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        bm.push(datalocal[i].location);
+        bm.push(dataArray[i].location);
       } else if (
-        datalocal[i].location == "นครพนม" &&
-        datalocal[i].group == localStorage.getItem("typeSel")
+        dataArray[i].location == "นครพนม" &&
+        dataArray[i].group == localStorage.getItem("typeSel")
       ) {
-        nm.push(datalocal[i].location);
+        nm.push(dataArray[i].location);
       }
     }
     // console.log(chonburi)
@@ -218,34 +242,34 @@ export default function detail() {
     }
     setbackground(resualt);
   }
+  
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setload(true);
-        const res = await axios.get('/api/read', {
-          params: {
-            action: "gethubData"
-          },
-        }
-        );
-        setData(res.data);
-        countLocation(res.data);
-      } catch (error) {
-        setload(false);
-        console.log(error);
-      } finally {
-        setload(false);
-        findBg();
-      }
-    };
-
-    fetchData();
-  }, []);
+    // ตรวจสอบว่าจำเป็นต้องโหลดข้อมูลหรือไม่
+    if (data.length === 0) {
+      fetchData();
+    } else {
+      countLocation(data);
+    }
+    
+    // ตรวจสอบว่าจำเป็นต้องโหลดข้อมูลรูปภาพหรือไม่
+    if (dataImg.length === 0) {
+      fetchImgData();
+    } else {
+      updateBackgroundFromLocalStorage();
+    }
+    
+    // แสดง log เพื่อ debug
+    console.log("Current data length:", data.length);
+    console.log("Current dataImg length:", dataImg.length);
+    console.log("Current background:", background);
+    console.log("Current localStorage listSel:", typeof window !== 'undefined' ? localStorage.getItem("listSel") : null);
+    
+  }, [data, dataImg, background]);
 
   return (
     <>
-      {load ? (
+      {loading  ? (
         <div className="loader">
           <div className="book-wrapper">
             <svg
@@ -326,13 +350,7 @@ export default function detail() {
         <div></div>
       )}
 
-      <Navbar
-        search={search}
-        setsearch={setsearch}
-        setload={setload}
-        setData={setDataImg}
-        setbackground={setbackground}
-      />
+       <Navbar search={search} setsearch={setSearch} />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 overflow-auto justify-items-center gap-3 pt-[90px] pb-[80px] xl:h-[100dvh]">
         <Box className="pt-[0px] order-2 px-1 md:px-2 xl:px-3">
@@ -343,11 +361,12 @@ export default function detail() {
             <Table stickyHeader>
               <thead>
                 <tr className="text-[16px] text-center">
-                  <th className="w-[130px] sm:w-[180px] md:w-[80px] xl:w-[350px]">
+                  <th className="w-[130px] sm:w-[180px] md:w-[80px] xl:w-[180px]">
                   ทะเบียน
                   </th>
                   <th>ตราอักษร</th>
                   <th>สถานที่</th>
+                  <th>สถานะ</th>
                 </tr>
               </thead>
               <tbody key={data}>
@@ -368,6 +387,14 @@ export default function detail() {
                       <td>{row.number}</td>
                       <td>{row.tra}</td>
                       <td>{row.location}</td>
+                      <td>
+                        {row.status == "ใช้งานได้" ? (
+                          <span className="text-green-500">{row.status}</span>
+                        ) : (
+                          <span className="text-red-500">{row.status}</span>
+                        )}
+                      </td>
+                     
                     </tr>
                   ))}
               </tbody>
@@ -381,7 +408,7 @@ export default function detail() {
       <div
         className="bg-page md:z-[-1] order-3 bottom-[-445px] right-[14px] sm:bottom-[80px] sm:right-0"
         style={{
-          backgroundImage: "url(" + background + ")",
+          backgroundImage: `url(${background})`
         }}
       ></div>
 

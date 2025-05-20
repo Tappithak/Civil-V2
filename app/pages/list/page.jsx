@@ -1,50 +1,34 @@
+// list.jsx
 "use client";
-import axios from "axios";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "../../../components/layout/Nav";
 import Footer from "../../../components/layout/Footer";
 import Table from "@mui/joy/Table";
 import Button from "@mui/joy/Button";
 import Sheet from "@mui/joy/Sheet";
 import { Box, Typography } from "@mui/material";
+import { useData } from "../../../contexts/DataContext";
 
 export default function TableList() {
-  const [data, setData] = React.useState([]);
-  const [search, setsearch] = React.useState("");
-  const [load, setload] = React.useState(false);
-  const [background, setbackground] = React.useState("");
-  const [dataImg, setDataImg] = React.useState([]);
-  const [nonsLoad, setnonsLoad] = React.useState(false);
+  const [search, setSearch] = React.useState("");
+  const router = useRouter();
+  const { data, loading, fetchData, background, setBackground } = useData();
 
   function moveTodetails(val) {
     localStorage.setItem("typeSel", val);
-    window.location.href = "/pages/detail";
+    router.push("/pages/detail");
   }
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setload(true);
-        const res = await axios.get("/api/read", {
-          params: {
-            action: "gethubData",
-          },
-        });
-        setData(res.data);
-      } catch (error) {
-        setload(false);
-        console.log(error);
-      } finally {
-        setload(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+    if (data.length === 0) {
+      fetchData();
+    }
+  }, [data, fetchData]);
 
   return (
     <>
-      {load ? (
+      {loading ? (
         <div className="loader">
           <div className="book-wrapper">
             <svg
@@ -124,17 +108,12 @@ export default function TableList() {
       ) : (
         <div></div>
       )}
-      <Navbar
-        search={search}
-        setsearch={setsearch}
-        setload={setnonsLoad}
-        setData={setDataImg}
-        setbackground={setbackground}
-      />
+      <Navbar search={search} setsearch={setSearch} />
+
       <Box className="pt-[66px] px-1 md:px-2 xl:px-3">
         <Sheet
           sx={{ overflow: "auto" }}
-          className="bg-[#ffffff00] h-[500px] md:h-[650px] xl:h-[750px]"
+          className="bg-[#ffffff00] min-h-[calc(100vh-130px)] max-h-[calc(100vh-130px)] rounded-lg shadow-lg"
         >
           <Table stickyHeader>
             <thead>
@@ -142,9 +121,9 @@ export default function TableList() {
                 <th className="w-[130px] sm:w-[180px] md:w-[220px] xl:w-[350px]">
                   รายการ
                 </th>
-                <th>สถานะ</th>
+                {/* <th>สถานะ</th> */}
+                <th>ดูรายละเอียด</th>
                 <th>หน่วย</th>
-                <th>View</th>
               </tr>
             </thead>
             <tbody key={data}>
@@ -164,30 +143,37 @@ export default function TableList() {
                 .map((row, index) => (
                   <tr key={index}>
                     <td>{row.list}</td>
-                    <td>{
-                      row.status == "ใช้งานได้" ? (
-                        <Typography sx={{ color: "#00a000", fontWeight: "bold" }}>
+                    {/* <td>
+                      {row.status == "ใช้งานได้" ? (
+                        <Typography
+                          sx={{ color: "#00a000", fontWeight: "bold" }}
+                        >
                           {row.status}
                         </Typography>
                       ) : (
-                        <Typography sx={{ color: "#a20c0c",fontWeight: "bold"  }}>
+                        <Typography
+                          sx={{ color: "#a20c0c", fontWeight: "bold" }}
+                        >
                           {row.status}
                         </Typography>
-                      )
-                      }</td>
-                    <td>{row.depart}</td>
+                      )}
+                    </td> */}
                     <td>
                       <Button
+                        variant="outlined"
+                        color="danger"
+                        size="sm"
                         onClick={() => moveTodetails(row.depart + row.list)}
-                        sx={{
-                          backgroundColor: "#a20c0c",
-                          color: "white",
-                          ":hover": { backgroundColor: "#a20c0c" },
-                        }}
+                        // sx={{
+                        //   // backgroundColor: "#a20c0c",
+                        //   color: "white",
+                        //   ":hover": { backgroundColor: "#a20c0c" },
+                        // }}
                       >
-                        View
+                        ดูรายละเอียด
                       </Button>
                     </td>
+                    <td>{row.depart}</td>
                   </tr>
                 ))}
             </tbody>
@@ -198,7 +184,7 @@ export default function TableList() {
       <div
         className="bg-page"
         style={{
-          backgroundImage: "url(" + background + ")",
+          backgroundImage: `url(${background})`
         }}
       ></div>
 

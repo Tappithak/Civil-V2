@@ -1,16 +1,22 @@
+// nav.jsx
 "use client";
 import * as React from "react";
 import axios from "axios";
 import Image from "next/image";
 import Swal from "sweetalert2";
+import { useData } from "../../contexts/DataContext";
 
-export default function navbar({
-  search,
-  setsearch,
-  setload,
-  setData,
-  setbackground,
-}) {
+export default function Navbar({ search, setsearch }) {
+  const {
+    data,
+    loading,
+    setLoading,
+    dataImg,
+    setDataImg,
+    background,
+    setBackground,
+    fetchImgData,
+  } = useData();
   const [user, setuser] = React.useState("");
   const [fullname, setfullname] = React.useState("");
   const logoutconfirm = async () => {
@@ -30,15 +36,19 @@ export default function navbar({
           withCredentials: true, // ส่ง Cookies ไปด้วย
         });
 
-        axios.post("/api/removedevice", {username:localStorage.getItem("nameuser")}).then((res) => {
-          if (res.status === 200) {
-            window.location.href = "/auth/login";
-            Swal.fire({
-              title: "Logout success!",
-              icon: "success",
-            });
-          }
-        });
+        axios
+          .post("/api/removedevice", {
+            username: localStorage.getItem("nameuser"),
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              window.location.href = "/auth/login";
+              Swal.fire({
+                title: "Logout success!",
+                icon: "success",
+              });
+            }
+          });
       } catch (err) {
         window.location.href = "/auth/login";
       }
@@ -46,54 +56,31 @@ export default function navbar({
   };
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setload(true);
-        const res = await axios.get(`/api/read?action=gethubImg`, {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-        setData(res.data);
-
-        let resualt = "";
-        for (var i = 0; i < res.data.length; i++) {
-          if (res.data[i].name == localStorage.getItem("listSel")) {
-            resualt = res.data[i].img;
-          }
-        }
-        setbackground(resualt);
-      } catch (error) {
-        setload(false);
-        console.log(error);
-      } finally {
-        setload(false);
-      }
-    };
-
     const validateToken = async () => {
       try {
         const response = await axios.get("/api/validate-token", {
           withCredentials: true,
         });
         if (response.data.valid) {
-          // ถ้า Token ถูกต้อง อัพเดท User
           setfullname(response.data.user);
           setuser(response.data.user.split("")[0]);
-          fetchData();
+          fetchImgData(); // ใช้ฟังก์ชันจาก context
         }
       } catch (error) {
         // ถ้า Token ไม่ถูกต้อง ให้ลบ Token ออกจาก Cookies
         console.log(error);
-        axios.post("/api/removedevice", {username:localStorage.getItem("nameuser")}).then((res) => {
-          if (res.status === 200) {
-            window.location.href = "/auth/login";
-          }
-        });
-        
+        axios
+          .post("/api/removedevice", {
+            username: localStorage.getItem("nameuser"),
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              window.location.href = "/auth/login";
+            }
+          });
       }
     };
-    
+
     validateToken();
   }, []);
 
@@ -107,7 +94,14 @@ export default function navbar({
           width={80}
           height={70}
         />
-        <a className="ml-3 text-2xl hidden sm:flex">ยุทโธปกรณ์สายช่างโยธา</a>
+        <a className="sm:flex flex-col items-start hidden ">
+          <span className="text-slate-950 font-bold">
+            NPD Logistics Hub Application
+            </span>
+            <span className="text-sm text-slate-600 hidden sm:hidden md:hidden lg:block xl:block">
+              แอปพลิเคชันระบบส่งกำลังบำรุงสายช่างโยธา เพื่อสนับสนุนภารกิจกองทัพเรือ และรองรับสถานการณ์วิกฤต
+            </span>
+        </a>
       </div>
       <div className="flex-none gap-2">
         <div className="form-control">

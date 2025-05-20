@@ -1,3 +1,4 @@
+// report.jsx
 "use client";
 import axios from "axios";
 import * as React from "react";
@@ -309,7 +310,7 @@ load ?
       <div
         className="bg-page md:z-[-1] order-3 bottom-[-445px] right-[14px] sm:bottom-[80px] sm:right-0"
         style={{
-          backgroundImage: "url(" + background + ")",
+          backgroundImage: `url(${background})`
         }}
       ></div>
    

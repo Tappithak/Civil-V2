@@ -1,24 +1,35 @@
-'use client';
-// import Logoleft from "../image/logo-l.jfif";
+// home.jsx
+"use client";
 import * as React from "react";
-import axios from "axios";
 import Navbar from "../../../components/layout/Nav";
 import Footer from "../../../components/layout/Footer";
+import { useData } from "../../../contexts/DataContext";
+import { useRouter } from "next/navigation";
 
-export default function nav() {
-  const [search, setsearch] = React.useState("");
-  const [load, setload] = React.useState(false);
-  const [data, setData] = React.useState([]);
-  const [background, setbackground] = React.useState("");
+export default function Home() {
+  const [search, setSearch] = React.useState("");
+  const router = useRouter();
+  const { data, loading, fetchData, dataImg } = useData();
 
   function moveByname(type) {
     localStorage.setItem("listSel", type);
-    window.location.href = "/pages/list";
+    router.push("/pages/list");
+  }
+
+  React.useEffect(() => {
+    if (data.length === 0) {
+      fetchData();
+    }
+  }, [data, fetchData]);
+
+  function moveByname(type) {
+    localStorage.setItem("listSel", type);
+    router.push("/pages/list");
   }
 
   return (
     <>
-      {load ? (
+      {loading ? (
         <div className="loader">
           <div className="book-wrapper">
             <svg
@@ -99,39 +110,51 @@ export default function nav() {
         <div></div>
       )}
 
-      <Navbar search={search} setsearch={setsearch} setload={setload} setData={setData} setbackground={setbackground}/>
+      <Navbar search={search} setsearch={setSearch} />
+
       <div className="pt-[95px] pb-[80px]" style={{ zoom: "90%" }}>
         <div className="grid grid-cols-2 gap-2 p-2 md:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {
-          data
-            .filter((item) => item.name && item.name.includes(search) && item.id != "")
-            .sort((a, b) => b.num - a.num)
-            .map((item) => {
-              return (
-                <div
-                  className="card card-compact w-full text-slate-950 bg-white shadow-xl p-2 clshover"
-                  key={item.id}
-                  onClick={() => moveByname(item.name)}
-                >
-                  <figure>
-                    <img className="w-[100%] h-[140px] object-cover sm:h-[100px] md:h-[120px] lg:h-[130px] xl:h-[140px]" 
-                    src={item.img} alt={item.name} />
-                  </figure>
-                  <div className="card-body">
-                    <div className="card-title text-center text-[18px] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.3rem]">
-                      {item.name}
+          {dataImg.length > 0 ? (
+            dataImg
+              .filter(
+                (item) =>
+                  item.name && item.name.includes(search) && item.id != ""
+              )
+              .sort((a, b) => b.num - a.num)
+              .map((item) => {
+                return (
+                  <div
+                    className="card card-compact w-full text-slate-950 bg-white shadow-xl p-2 clshover"
+                    key={item.id}
+                    onClick={() => moveByname(item.name)}
+                  >
+                    <figure>
+                      <div
+                        style={{
+                          backgroundImage: `url(${item.img})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          width: "100%",
+                          height: "140px",
+                        }}
+                      ></div>
+                    </figure>
+                    <div className="card-body">
+                      <div className="card-title text-center text-[18px] sm:text-[1rem] md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.3rem]">
+                        {item.name}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
-            }
+                );
+              })
+          ) : (
+            <div></div>
+          )}
         </div>
       </div>
 
       {/* =============== Footer  =============== */}
-        <Footer page={"home"}/>
-      
+      <Footer page={"home"} />
     </>
   );
 }

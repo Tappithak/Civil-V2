@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { DataProvider } from '../contexts/DataContext';
 import "./globals.css";
 import Script from "next/script";
 
@@ -13,8 +13,8 @@ import Script from "next/script";
 // });
 
 export const metadata = {
-  title: "ยุทโธปกรณ์สายช่างโยธา",
-  description: "ยุทโธปกรณ์สายช่างโยธา",
+  title: "NPD Logistics Hub Application",
+  description: "NPD Logistics Hub Application",
   // icons: {
   //   icon: "/icon.png",
   //   shortcut: "/icon.png",
@@ -25,6 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <DataProvider>
     <html lang="en">
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,5 +49,6 @@ export default function RootLayout({ children }) {
         {children}
       </body>
     </html>
+    </DataProvider>
   );
 }
