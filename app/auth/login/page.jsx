@@ -73,7 +73,7 @@ const LoginPage = () => {
           },
           buttonsStyling: false,
           showConfirmButton: false,
-          showCloseButton: true,
+          showCloseButton: false,
           showCancelButton: false,
           focusCancel: false,
           focusConfirm: false,
@@ -91,7 +91,7 @@ const LoginPage = () => {
       console.log("Login error:", error);
       Swal.fire({
         icon: "error",
-        title: "เข้าสู่ระบบไม่สำเร็จ โปดดให้ตรวจสอบ รหัสผ่านและชื่อผู้ใช้",
+        title: "เข้าสู่ระบบไม่สำเร็จโปรดตรวจสอบรหัสผ่านและชื่อผู้ใช้",
         // text: error.response?.data?.message || "An error occurred during login.",
         confirmButtonText: "OK",
         customClass: {
@@ -135,7 +135,7 @@ const LoginPage = () => {
               height={100} 
               className="mx-auto mb-4"
             />
-            <Box className="text-sm uppercase tracking-wider mb-2">NPD Logistics Hub</Box>
+            <Box className="text-md font-bold uppercase tracking-wider mb-2">NPD Logistics Hub</Box>
           </Box>
           
           <Box className="text-center">
