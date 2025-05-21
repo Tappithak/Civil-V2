@@ -21,8 +21,10 @@ export default function TableList() {
   }
 
   React.useEffect(() => {
+    console.log("data:", data);
     if (data.length === 0) {
       fetchData();
+      console.log("fetchData",data);
     }
   }, [data, fetchData]);
 
