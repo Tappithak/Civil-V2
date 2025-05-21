@@ -10,11 +10,16 @@ export default async function handler(req, res) {
   try {
     // ตรวจสอบ token โดยใช้ secret key ที่ใช้ในการเข้ารหัส
     const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET); // ใช้คีย์ลับในการตรวจสอบ token (ควรเก็บใน environment variable)
+    const allowedOrigins = [
+      "https://equipmentapps.netlify.app",
+      "http://localhost:3000",
+    ];
+    const origin = req.headers.origin;
 
-    res.setHeader(
-      "Access-Control-Allow-Origin",
-      "https://myaccounting-app.netlify.app"
-    );
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+    
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.setHeader(

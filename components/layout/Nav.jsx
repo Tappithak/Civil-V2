@@ -5,6 +5,7 @@ import axios from "axios";
 import Image from "next/image";
 import Swal from "sweetalert2";
 import { useData } from "../../contexts/DataContext";
+import { useRouter } from "next/navigation";
 
 export default function Navbar({ search, setsearch }) {
   const {
@@ -17,42 +18,19 @@ export default function Navbar({ search, setsearch }) {
     setBackground,
     fetchImgData,
   } = useData();
+  const router = useRouter();
   const [user, setuser] = React.useState("");
   const [fullname, setfullname] = React.useState("");
-  const logoutconfirm = async () => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to log out?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    });
 
-    if (result.isConfirmed) {
-      try {
+  const logoutconfirm = async () => {
+    try {
         await axios.post("/api/logout", {
           withCredentials: true, // ส่ง Cookies ไปด้วย
         });
-
-        axios
-          .post("/api/removedevice", {
-            username: localStorage.getItem("nameuser"),
-          })
-          .then((res) => {
-            if (res.status === 200) {
-              window.location.href = "/auth/login";
-              Swal.fire({
-                title: "Logout success!",
-                icon: "success",
-              });
-            }
-          });
-      } catch (err) {
-        window.location.href = "/auth/login";
+        router.push("/auth/login");
+      }catch (error) {
+        console.log("Logout error:", error);
       }
-    }
   };
 
   React.useEffect(() => {
@@ -75,7 +53,7 @@ export default function Navbar({ search, setsearch }) {
           })
           .then((res) => {
             if (res.status === 200) {
-              window.location.href = "/auth/login";
+              router.push("/auth/login");
             }
           });
       }
@@ -85,14 +63,15 @@ export default function Navbar({ search, setsearch }) {
   }, []);
 
   return (
-    <div className="navbar bg-white text-slate-950 shadow-lg fixed top-0 left-0 w-full z-50">
-      <div className="flex-1">
+    <div className="flex flex-row justify-between sticky bg-white text-slate-950 shadow-lg top-0 left-0 w-full z-50 p-2">
+      <div className="flex flex-row items-center gap-2">
         <Image
-          className="btn btn-ghost text-xl"
+          className="hover:cursor-pointer hover:scale-105 transition-all duration-300"
           src="/icon.png"
           alt="logo"
-          width={80}
-          height={70}
+          width={60}
+          height={60}
+          onClick={() => router.push("/pages/home")}
         />
         <a className="sm:flex flex-col items-start hidden ">
           <span className="text-slate-950 font-bold">
@@ -103,7 +82,7 @@ export default function Navbar({ search, setsearch }) {
             </span>
         </a>
       </div>
-      <div className="flex-none gap-2">
+      <div className="flex flex-row gap-2 items-center p-2">
         <div className="form-control">
           <input
             type="text"
@@ -125,7 +104,7 @@ export default function Navbar({ search, setsearch }) {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow text-slate-950 bg-white"
+            className="menu menu-sm dropdown-content font-bold text-red-600 rounded-md  z-[1] mt-3 w-52 p-2 shadow  bg-white"
           >
             {/* <li>
               <a className="justify-between">

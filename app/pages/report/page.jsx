@@ -262,7 +262,7 @@ load ?
 
       <Navbar search={search} setsearch={setsearch} setload={setload} setData={setDataImg} setbackground={setbackground}/>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 overflow-auto justify-items-center gap-3 pt-[90px] pb-[80px] xl:h-[100dvh]">
+      <div className="grid grid-cols-1 xl:grid-cols-3 overflow-auto justify-items-center gap-3 pb-[80px] xl:h-[100dvh]">
         <Box className="pt-[0px] order-2 px-[3rem] md:px-2 xl:px-3">
           <Sheet
             sx={{ overflow: "auto" }}

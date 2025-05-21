@@ -110,7 +110,7 @@ export default function TableList() {
       )}
       <Navbar search={search} setsearch={setSearch} />
 
-      <Box className="pt-[66px] px-1 md:px-2 xl:px-3">
+      <Box className="px-1 md:px-2 xl:px-3">
         <Sheet
           sx={{ overflow: "auto" }}
           className="bg-[#ffffff00] min-h-[calc(100vh-130px)] max-h-[calc(100vh-130px)] rounded-lg shadow-lg"
@@ -129,46 +129,45 @@ export default function TableList() {
             <tbody key={data}>
               {data
                 .filter((val) => {
-                  if (search == "") {
-                    return val.list.includes(localStorage.getItem("listSel"));
-                  } else if (
-                    val.list.includes(localStorage.getItem("listSel")) &&
-                    (val.list.toLowerCase().includes(search.toLowerCase()) ||
-                      val.status.toLowerCase().includes(search.toLowerCase()) ||
-                      val.depart.toLowerCase().includes(search.toLowerCase()))
-                  ) {
-                    return val;
+                  const listSel = localStorage.getItem("listSel");
+                  const searchLower = search.toLowerCase();
+
+                  // ป้องกันกรณี val.list, val.status, val.depart เป็น undefined
+                  const list = val.list ?? "";
+                  const status = val.status ?? "";
+                  const depart = val.depart ?? "";
+
+                  if (search === "") {
+                    return list.includes(listSel);
                   }
+
+                  return (
+                    list.includes(listSel) &&
+                    (list.toLowerCase().includes(searchLower) ||
+                      status.toLowerCase().includes(searchLower) ||
+                      depart.toLowerCase().includes(searchLower))
+                  );
                 })
                 .map((row, index) => (
                   <tr key={index}>
                     <td>{row.list}</td>
                     {/* <td>
-                      {row.status == "ใช้งานได้" ? (
-                        <Typography
-                          sx={{ color: "#00a000", fontWeight: "bold" }}
-                        >
-                          {row.status}
-                        </Typography>
-                      ) : (
-                        <Typography
-                          sx={{ color: "#a20c0c", fontWeight: "bold" }}
-                        >
-                          {row.status}
-                        </Typography>
-                      )}
-                    </td> */}
+        {row.status === "ใช้งานได้" ? (
+          <Typography sx={{ color: "#00a000", fontWeight: "bold" }}>
+            {row.status}
+          </Typography>
+        ) : (
+          <Typography sx={{ color: "#a20c0c", fontWeight: "bold" }}>
+            {row.status}
+          </Typography>
+        )}
+      </td> */}
                     <td>
                       <Button
                         variant="outlined"
                         color="danger"
                         size="sm"
                         onClick={() => moveTodetails(row.depart + row.list)}
-                        // sx={{
-                        //   // backgroundColor: "#a20c0c",
-                        //   color: "white",
-                        //   ":hover": { backgroundColor: "#a20c0c" },
-                        // }}
                       >
                         ดูรายละเอียด
                       </Button>
@@ -184,7 +183,7 @@ export default function TableList() {
       <div
         className="bg-page"
         style={{
-          backgroundImage: `url(${background})`
+          backgroundImage: `url(${background})`,
         }}
       ></div>
 
